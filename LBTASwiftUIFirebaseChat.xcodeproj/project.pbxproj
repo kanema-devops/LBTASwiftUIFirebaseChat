@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		F419DF0B2852EE7900309035 /* LBTASwiftUIFirebaseChatApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F419DF0A2852EE7900309035 /* LBTASwiftUIFirebaseChatApp.swift */; };
-		F419DF0D2852EE7900309035 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F419DF0C2852EE7900309035 /* ContentView.swift */; };
+		F419DF0D2852EE7900309035 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F419DF0C2852EE7900309035 /* LoginView.swift */; };
 		F419DF0F2852EE7B00309035 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F419DF0E2852EE7B00309035 /* Assets.xcassets */; };
 		F419DF122852EE7B00309035 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F419DF112852EE7B00309035 /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -16,7 +16,7 @@
 /* Begin PBXFileReference section */
 		F419DF072852EE7900309035 /* LBTASwiftUIFirebaseChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LBTASwiftUIFirebaseChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F419DF0A2852EE7900309035 /* LBTASwiftUIFirebaseChatApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LBTASwiftUIFirebaseChatApp.swift; sourceTree = "<group>"; };
-		F419DF0C2852EE7900309035 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F419DF0C2852EE7900309035 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		F419DF0E2852EE7B00309035 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F419DF112852EE7B00309035 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -52,7 +52,7 @@
 			isa = PBXGroup;
 			children = (
 				F419DF0A2852EE7900309035 /* LBTASwiftUIFirebaseChatApp.swift */,
-				F419DF0C2852EE7900309035 /* ContentView.swift */,
+				F419DF0C2852EE7900309035 /* LoginView.swift */,
 				F419DF0E2852EE7B00309035 /* Assets.xcassets */,
 				F419DF102852EE7B00309035 /* Preview Content */,
 			);
@@ -137,7 +137,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F419DF0D2852EE7900309035 /* ContentView.swift in Sources */,
+				F419DF0D2852EE7900309035 /* LoginView.swift in Sources */,
 				F419DF0B2852EE7900309035 /* LBTASwiftUIFirebaseChatApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -269,6 +269,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"LBTASwiftUIFirebaseChat/Preview Content\"";
+				DEVELOPMENT_TEAM = XW5HJS9CW6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -297,6 +298,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"LBTASwiftUIFirebaseChat/Preview Content\"";
+				DEVELOPMENT_TEAM = XW5HJS9CW6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
