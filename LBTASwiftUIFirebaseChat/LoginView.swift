@@ -4,21 +4,46 @@
 //
 //  Created by Home on 6/9/22.
 //
+// Reference
+// https://www.youtube.com/playlist?list=PL0dzCUj1L5JEN2aWYFCpqfTBeVHcGZjGw
+//
 
 import SwiftUI
+import Firebase
+
+class FirebaseManager: NSObject{
+    
+    let auth: Auth
+    let storage: Storage
+    
+    static let shared = FirebaseManager()
+    
+    override init(){
+        FirebaseApp.configure()
+
+        self.auth = Auth.auth()
+        self.storage = Storage.storage()
+
+        super.init()
+    }
+    
+}
 
 struct LoginView: View {
     
+    @State var loginStatusMessage = (isSuccess: false, message: "")
     @State var isLoginMode = false
     @State var email = ""
     @State var password = ""
+    
+    @State var shouldShowImagePicker = false
+    @State var image: UIImage?
     
     var body: some View {
         NavigationView{
             ScrollView{
                 
-                VStack(spacing: 15)
-                {
+                VStack(spacing: 15) {
                     // create login/create account quick menu
                     Picker(selection: $isLoginMode, label: Text("Picker Here")) {
                         Text("Login")
@@ -32,18 +57,31 @@ struct LoginView: View {
                     {
                         // create image login image with down state
                         Button {
-                            
+                            shouldShowImagePicker
+                                .toggle()
                         } label: {
                             // login image
-                            Image(systemName: "person.fill")
-                                .font(.system(size: 64))
-                                .padding()
+                            VStack {
+                                if let image = self.image {
+                                    Image(uiImage: image)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 128, height: 128)
+                                        .cornerRadius(64)
+                                } else{
+                                    Image(systemName: "person.fill")
+                                        .font(.system(size: 64))
+                                        .padding()
+                                        .foregroundColor(Color(.label))
+                                }
+                            }
+                            .overlay(RoundedRectangle(cornerRadius: 64)
+                                        .stroke(Color.black, lineWidth: 3))
                         }
                     }
                     
                     // create e-mail and password window
-                    Group
-                    {
+                    Group {
                         TextField("Email", text: $email)
                             .keyboardType(.emailAddress)
                             .autocapitalization(.none)
@@ -67,6 +105,10 @@ struct LoginView: View {
                         }
                         .background(Color.blue)
                     }
+                    
+                    Text(self.loginStatusMessage.message)
+                        .foregroundColor(self.loginStatusMessage.isSuccess ? .green : .red)
+                    
                 }
                 .padding()
                 
@@ -75,13 +117,73 @@ struct LoginView: View {
             .background(Color(.init(white: 0, alpha: 0.05))
                             .ignoresSafeArea())
         }
+        .navigationViewStyle(StackNavigationViewStyle())
+        .fullScreenCover(isPresented: $shouldShowImagePicker, onDismiss: nil) {
+            ImagePicker(image: $image)
+        }
     }
     
     private func handleAction(){
         if isLoginMode{
-            print("Log in")
+            login()
         } else{
-            print("Create account")
+            createNewAccout()
+        }
+    }
+    
+    private func createNewAccout(){
+        FirebaseManager.shared.auth.createUser(withEmail: email, password: password) { result, error in
+            if let err = error {
+                self.loginStatusMessage.message = "Failed to create user: \(err)"
+                self.loginStatusMessage.isSuccess = false
+                return
+            }
+            
+            // TODO: what does this operation: \( ?? )
+            self.loginStatusMessage.message = "Succesfully created user: \(result?.user.uid ?? "")"
+            self.loginStatusMessage.isSuccess = true
+            
+            self.persistImageToStorage()
+        }
+    }
+    
+    private func persistImageToStorage(){
+        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {return}
+        
+        let ref = FirebaseManager.shared.storage.reference(withPath: uid)
+        
+        guard let imageData = self.image?.jpegData(compressionQuality: 0.5) else {return}
+        
+        ref.putData(imageData, metadata: nil) { meta, error in
+            if let err = error {
+                self.loginStatusMessage.message = "Failed to push image: \(err)"
+                self.loginStatusMessage.isSuccess = false
+                return
+            }
+            
+            ref.downloadURL { url, error in
+                if let err = error {
+                    self.loginStatusMessage.message = "Failed to retrieve download URL: \(err)"
+                    self.loginStatusMessage.isSuccess = false
+                    return
+                }
+                
+                self.loginStatusMessage.message = "Succesfully stored image with URL: \(url?.absoluteString ?? "")"
+                self.loginStatusMessage.isSuccess = true
+            }
+        }
+    }
+    
+    private func login(){
+        
+        FirebaseManager.shared.auth.signIn(withEmail: email, password: password) { result, error in
+            if let err = error {
+                self.loginStatusMessage.message = "Failed to log in: \(err)"
+                self.loginStatusMessage.isSuccess = false
+            }
+            
+            self.loginStatusMessage.message = "Succesfully logged in: \(result?.user.uid ?? "")"
+            self.loginStatusMessage.isSuccess = true
         }
     }
 }
@@ -91,3 +193,4 @@ struct ContentView_Previews: PreviewProvider {
         LoginView()
     }
 }
+
