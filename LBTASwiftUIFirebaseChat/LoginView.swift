@@ -12,13 +12,15 @@ import SwiftUI
 
 struct LoginView: View {
     
-    @State var loginStatusMessage = (isSuccess: false, message: "")
-    @State var isLoginMode = false
-    @State var email = ""
-    @State var password = ""
+    let didCompleteLoginProcess: () -> ()
     
-    @State var shouldShowImagePicker = false
-    @State var image: UIImage?
+    @State private var loginStatusMessage = (isSuccess: false, message: "")
+    @State private var isLoginMode = false
+    @State private var email = ""
+    @State private var password = ""
+    
+    @State private var shouldShowImagePicker = false
+    @State private var image: UIImage?
     
     var body: some View {
         NavigationView{
@@ -113,6 +115,11 @@ struct LoginView: View {
     }
     
     private func createNewAccout(){
+        
+        if self.image == nil {
+            self.loginStatusMessage.message = "You must select an avatar image"
+            return
+        }
         FirebaseManager.shared.auth.createUser(withEmail: email, password: password) { result, error in
             if let err = error {
                 self.loginStatusMessage.message = "Failed to create user: \(err)"
@@ -174,6 +181,8 @@ struct LoginView: View {
                 
                 self.loginStatusMessage.message = "Succesfully stored user data: \(userData)"
                 self.loginStatusMessage.isSuccess = true
+                
+                self.didCompleteLoginProcess()
             }
     }
     
@@ -187,13 +196,15 @@ struct LoginView: View {
             
             self.loginStatusMessage.message = "Succesfully logged in: \(result?.user.uid ?? "")"
             self.loginStatusMessage.isSuccess = true
+            
+            self.didCompleteLoginProcess()
         }
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        LoginView()
+        LoginView(didCompleteLoginProcess: {})
     }
 }
 

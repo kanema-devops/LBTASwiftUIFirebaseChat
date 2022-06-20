@@ -8,20 +8,22 @@
 import SwiftUI
 import SDWebImageSwiftUI
 
-struct ChatUser{
-    let uid, email, profileImageUrl: String
-}
-
 class MainMessagesViewModel: ObservableObject{
     
     @Published var errorMessage = ""
     @Published var chatUser: ChatUser?
+    @Published var isUserCurrentlyLoggedOut = false
     
     init(){
+        
+        DispatchQueue.main.async {
+            self.isUserCurrentlyLoggedOut = FirebaseManager.shared.auth.currentUser?.uid == nil 
+        }
+        
         fetchCurrentUser()
     }
     
-    private func fetchCurrentUser(){
+    func fetchCurrentUser(){
         
         
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {
@@ -41,12 +43,13 @@ class MainMessagesViewModel: ObservableObject{
             
             self.errorMessage = "Data: \(data.description)"
             
-            let uid = data["uid"] as? String ?? ""
-            let email = data["email"] as? String ?? ""
-            let imageProfileUrl = data["imageProfileUrl"] as? String ?? ""
-            
-            self.chatUser = ChatUser(uid: uid, email: email, profileImageUrl: imageProfileUrl)
+            self.chatUser = .init(data: data)
         }
+    }
+    
+    func handleSignOut(){
+        isUserCurrentlyLoggedOut.toggle()
+        try? FirebaseManager.shared.auth.signOut()
     }
 }
 
@@ -129,7 +132,7 @@ struct MainMessagesView: View {
                 .frame(width: 50, height: 50)
                 .clipped()
                 .cornerRadius(50)
-                .overlay(RoundedRectangle(cornerRadius: 50))
+                .overlay(RoundedRectangle(cornerRadius: 50).stroke(Color(.label), lineWidth: 1))
                 .shadow(radius: 5)
             
             VStack(alignment: .leading, spacing: 4){
@@ -164,18 +167,22 @@ struct MainMessagesView: View {
             .init(title: Text("Settings"), message: Text("What do you want to do?"), buttons: [
                 .destructive(Text("Sign Out"), action: {
                     print("Handle signout")
+                    vm.handleSignOut()
                 }),
                 .cancel()
             ])
         }
+        .fullScreenCover(isPresented: $vm.isUserCurrentlyLoggedOut, onDismiss: nil) {
+            LoginView(didCompleteLoginProcess: {
+                self.vm.isUserCurrentlyLoggedOut = false
+                self.vm.fetchCurrentUser()
+            })
+        }
     }
-    
-    
 }
 
 struct MainMessagesView_Previews: PreviewProvider {
     static var previews: some View {
         MainMessagesView()
-            
     }
 }
